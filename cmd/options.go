@@ -59,7 +59,6 @@ func (o *treeOptions) loadFamilyFromFile() error {
 		}
 		o.Config = config
 	}
-	// TODO: Overwrite config with flags
 	return nil
 }
 
