@@ -18,7 +18,7 @@ func main() {
 	}
 
 	ctx := setupSignalHandler()
-	command := cmd.NewFamilyTreeCommand(ctx)
+	command := cmd.NewFamilyCommand(ctx)
 	if err := command.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
