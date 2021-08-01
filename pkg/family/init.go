@@ -1,9 +1,8 @@
 package family
 
 import (
-	"flag"
-
 	"github.com/robfig/cron/v3"
+	flag "github.com/spf13/pflag"
 )
 
 var (
@@ -34,4 +33,9 @@ func (c *TreeComponentConfig) Validate() error {
 		return err
 	}
 	return nil
+}
+
+func (c *FamilyConfig) AddFlags(fs *flag.FlagSet) {
+	fs.StringSliceVar(&c.Parents, "parents", defaultParents, "Parents of Family")
+	fs.StringSliceVar(&c.Children, "children", defultChildren, "Children of Family")
 }

@@ -7,6 +7,8 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
+
+	"github.com/frenchtoasters/familytree/pkg/family"
 )
 
 type treeOptions struct {
@@ -14,7 +16,7 @@ type treeOptions struct {
 	Version    bool
 	LogLevel   uint32
 	Logger     *logrus.Logger
-	Config     *server.BackupRestoreComponentConfig
+	Config     *family.TreeComponentConfig
 }
 
 // newTreeOptions returns a new Options object.
@@ -25,7 +27,7 @@ func newTreeOptions() *treeOptions {
 	return &treeOptions{
 		LogLevel: 4,
 		Version:  false,
-		Config:   server.NewBackupRestoreComponentConfig(),
+		Config:   family.NewTreeComponentConfig(),
 		Logger:   logger,
 	}
 }
@@ -45,13 +47,13 @@ func (o *treeOptions) complete() {
 	o.Logger.SetLevel(logrus.Level(o.LogLevel))
 }
 
-func (o *treeOptions) loadConfigFromFile() error {
+func (o *treeOptions) loadFamilyFromFile() error {
 	if len(o.ConfigFile) != 0 {
 		data, err := ioutil.ReadFile(o.ConfigFile)
 		if err != nil {
 			return err
 		}
-		config := server.NewBackupRestoreComponentConfig()
+		config := family.NewTreeComponentConfig()
 		if err := yaml.Unmarshal(data, config); err != nil {
 			return err
 		}
@@ -62,9 +64,9 @@ func (o *treeOptions) loadConfigFromFile() error {
 }
 
 func (o *treeOptions) run(ctx context.Context) error {
-	brServer, err := server.NewBackupRestoreServer(o.Logger, o.Config)
+	familyTree, err := family.NewFamilyTree(o.Logger, o.Config)
 	if err != nil {
 		return err
 	}
-	return brServer.Run(ctx)
+	return familyTree.Run(ctx)
 }
