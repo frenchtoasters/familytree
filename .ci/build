@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -e
+
+# For the build step concourse will set the following environment variables:
+# SOURCE_PATH - path to component repository root directory.
+# BINARY_PATH - path to an existing (empty) directory to place build results into.
+if [[ $(uname) == 'Darwin' ]]; then
+  READLINK_BIN="greadlink"
+else
+  READLINK_BIN="readlink"
+fi
+
+if [[ -z "${SOURCE_PATH}" ]]; then
+  export SOURCE_PATH="$(${READLINK_BIN} -f $(dirname ${0})/..)"
+else
+  export SOURCE_PATH="$(${READLINK_BIN} -f "${SOURCE_PATH}")"
+fi
+
+if [[ -z "${BINARY_PATH}" ]]; then
+  export BINARY_PATH="${SOURCE_PATH}/bin"
+else
+  export BINARY_PATH="$(${READLINK_BIN} -f "${BINARY_PATH}")/bin"
+fi
+
+VCS="github.com"
+ORGANIZATION="frenchtoasters"
+PROJECT="familytree"
+REPOSITORY=${VCS}/${ORGANIZATION}/${PROJECT}
+export GO111MODULE=on
+cd "${SOURCE_PATH}"
+
+
+###############################################################################
+
+VERSION_FILE="$(${READLINK_BIN}  -f "${SOURCE_PATH}/VERSION")"
+VERSION="$(cat "${VERSION_FILE}")"
+GIT_SHA=$(git rev-parse --short HEAD || echo "GitNotFound")
+
+# If no LOCAL_BUILD environment variable is set, we configure the `go build` command
+# to build for linux OS, amd64 architectures and without CGO enablement.
+if [[ -z "$LOCAL_BUILD" ]]; then
+  CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -a \
+    -mod vendor \
+    -v \
+    -o ${BINARY_PATH}/linux-amd64/familytree \
+    -ldflags "-w -X ${REPOSITORY}/pkg/version.Version=${VERSION} -X ${REPOSITORY}/pkg/version.GitSHA=${GIT_SHA}" \
+    main.go
+
+# If the LOCAL_BUILD environment variable is set, we simply run `go build`.
+else
+  go build \
+    -v \
+    -mod vendor \
+    -o ${BINARY_PATH}/familytree \
+    -ldflags "-w -X ${REPOSITORY}/pkg/version.Version=${VERSION} -X ${REPOSITORY}/pkg/version.GitSHA=${GIT_SHA}" \
+    main.go
+fi
