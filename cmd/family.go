@@ -7,9 +7,9 @@ import (
 )
 
 // NewFamilyTreeCommand is the base command for the family tree app
-func NewFamilyTreeCommand(ctx context.Context) *cobra.Command {
+func NewFamilyCommand(ctx context.Context) *cobra.Command {
 	var RootCmd = &cobra.Command{
-		Use:   "familytree",
+		Use:   "family",
 		Short: "command line utility for creating family trees",
 		Long:  "This command line utility is supporting the Family Tree web app",
 		Run: func(cmd *cobra.Command, args []string) {
@@ -20,7 +20,7 @@ func NewFamilyTreeCommand(ctx context.Context) *cobra.Command {
 	}
 
 	RootCmd.Flags().BoolVarP(&version, "version", "v", false, "print version info")
-	RootCmd.AddCommand(NewFamilyTreeCommand(ctx))
+	RootCmd.AddCommand(NewTreeCommand(ctx))
 
 	return RootCmd
 }
