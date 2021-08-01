@@ -3,7 +3,7 @@ package cmd
 import (
 	"runtime"
 
-	ver "github.com/frenchtoasters/familytree/pkg"
+	ver "github.com/frenchtoasters/familytree/pkg/version"
 )
 
 func printVersionInfo() {
