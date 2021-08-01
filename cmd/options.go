@@ -4,11 +4,10 @@ import (
 	"context"
 	"io/ioutil"
 
+	"github.com/frenchtoasters/familytree/pkg/family"
 	"github.com/ghodss/yaml"
 	"github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
-
-	"github.com/frenchtoasters/familytree/pkg/family"
 )
 
 type treeOptions struct {
